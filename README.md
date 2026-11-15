@@ -26,19 +26,11 @@ Stow refuses to replace a real file, so move an existing one out of the way firs
 
 ### System Tools
 
+For CachyOS:
+
 ```bash
-sudo dnf install \
-  fish \
-  zoxide \
-  eza \
-  fzf \
-  bat \
-  ripgrep \
-  fd-find \
-  git-delta \
-  direnv \
-  pgcli \
-  mycli
+sudo pacman -S --needed fish zoxide eza fzf bat ripgrep fd git-delta direnv pgcli stow
+uv tool install mycli  # not in the official repos; needs uv, see below
 ```
 
 ### Editor
