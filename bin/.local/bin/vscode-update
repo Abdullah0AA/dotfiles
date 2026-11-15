@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+# Installs or updates Microsoft's build of VS Code into ~/.local/opt/vscode, with a `code` command
+# and an app launcher. The previous version is kept as vscode.old.
+set -euo pipefail
+
+url="https://update.code.visualstudio.com/latest/linux-x64/stable"
+root="$HOME/.local/opt"
+current="$root/vscode"
+incoming="$root/vscode.new"
+backup="$root/vscode.old"
+bin_dir="$HOME/.local/bin"
+desktop_dir="$HOME/.local/share/applications"
+desktop_file="$desktop_dir/code.desktop"
+
+archive=$(mktemp --suffix=.tar.gz)
+trap 'rm -f "$archive"; rm -rf "$incoming"' EXIT
+
+mkdir -p "$root" "$bin_dir" "$desktop_dir"
+
+echo "Downloading latest Microsoft VS Code..."
+curl --fail --location --retry 3 "$url" -o "$archive"
+
+rm -rf "$incoming"
+mkdir -p "$incoming"
+echo "Extracting..."
+tar -xzf "$archive" -C "$incoming" --strip-components=1
+
+if [[ ! -x "$incoming/code" ]]; then
+  echo "Downloaded archive does not look like VS Code." >&2
+  exit 1
+fi
+
+rm -rf "$backup"
+if [[ -d "$current" ]]; then
+  echo "Backing up current installation..."
+  mv "$current" "$backup"
+fi
+
+if ! mv "$incoming" "$current"; then
+  echo "Installation failed." >&2
+  if [[ -d "$backup" ]]; then
+    mv "$backup" "$current"
+    echo "Previous installation restored." >&2
+  fi
+  exit 1
+fi
+
+ln -sf "$current/bin/code" "$bin_dir/code"
+
+cat > "$desktop_file" <<EOF
+[Desktop Entry]
+Name=Visual Studio Code
+Comment=Code Editing. Redefined.
+Exec=$current/code %F
+Icon=$current/resources/app/resources/linux/code.png
+Type=Application
+Terminal=false
+Categories=Development;IDE;
+StartupNotify=true
+StartupWMClass=Code
+MimeType=text/plain;inode/directory;
+EOF
+chmod +x "$desktop_file"
+
+# KDE only picks up the new launcher after its app cache is rebuilt.
+if command -v kbuildsycoca6 > /dev/null; then
+  kbuildsycoca6 > /dev/null 2>&1 || true
+fi
+
+echo
+echo "VS Code installed successfully."
+echo "Version: $("$current/bin/code" --version | head -n 1)"
+echo "Command: $bin_dir/code"
+echo "Launcher: $desktop_file"
+[[ -d "$backup" ]] && echo "Previous version: $backup"
+exit 0
