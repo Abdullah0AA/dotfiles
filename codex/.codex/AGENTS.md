@@ -11,10 +11,20 @@ Most code changes do not need an internal documentation change. Agents can read 
 - A local reason the code can't show goes in a short nearby code comment. Use an internal doc when the reasoning crosses boundaries or needs context the code cannot carry well. Link to the relevant source instead of copying it.
 - When a documented decision or constraint changes, rewrite or remove the affected text. Do not append another account of the new behavior. A new internal page needs a distinct, durable reason to exist.
 
+## Architecture
+
+Functional core, imperative shell. Keep business logic pure. Pass in values
+from the database, network, environment, clock, and random number generator.
+Keep logging in the shell. Handlers only read → call the core → write.
+
+When unit tests are needed, test the core without mocks. If a core test needs
+to mock I/O, move that I/O to the shell and pass its result into the core.
+
+Handle external-system quirks at the adapter boundary, including retries, parsing, and API-specific formats.
+Keep UI simple. Server features are services. Keep transports thin.
+
 ## Taste
 
-- Complexity belongs at the adapter boundary. Orchestration stays pure, UI stays dumb.
-- Server features are services; transports stay thin.
 - Default to no comment. Write one only for a constraint, an external quirk, or an invariant the code can't show, in one line where you can and four at most. Don't restate names or signatures, narrate steps, record history, or explain the fix you just made; the PR carries that.
 - If a rule here fights the task in front of you, say so loudly and get a human sign-off before breaking it.
 
