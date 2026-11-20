@@ -1,3 +1,1 @@
-# Snapshots playwright-cli writes into the folder it runs in.
-.playwright-cli/
 fish/.config/fish/fish_variables

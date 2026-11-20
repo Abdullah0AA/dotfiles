@@ -9,16 +9,13 @@ Each folder is one program, laid out the way its files sit in my home directory.
 ```sh
 git clone https://github.com/Abdullah0AA/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
-stow fish bin claude codex   # my PC
-stow zsh claude codex        # a server
+stow fish bin   # my PC
+stow zsh        # a server
 ```
 
 * `fish/` -> Fish shell configuration, for my PC
 * `bin/` -> my scripts in `~/.local/bin`, such as `vscode-update` (Microsoft's VS Code build)
 * `zsh/` -> Zsh configuration, for servers. See [docs/servers.md](docs/servers.md).
-* `codex/` -> `~/.codex/AGENTS.md`, my global instructions for coding agents
-* `claude/` -> `~/.claude/CLAUDE.md`, which imports the same instructions
-* `agent-tools/` -> install scripts for tools agents use. Run them, don't stow them.
 
 Stow refuses to replace a real file, so move an existing one out of the way first.
 
@@ -70,37 +67,6 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 ```bash
 curl -fsSL https://bun.com/install | bash
 ```
-
-## Agents
-
-```bash
-curl -fsSL https://claude.ai/install.sh | bash          # Claude Code
-curl -fsSL https://chatgpt.com/codex/install.sh | sh    # Codex
-curl -fsSL https://opencode.ai/install | bash           # opencode
-```
-
-Each command also updates its agent when run again.
-
-## Agent tools
-
-[`agent-tools/`](agent-tools/) holds a script per tool that agents use, each safe to re-run. They aren't Stow folders.
-
-* [`playwright-cli.sh`](agent-tools/playwright-cli.sh) -> browser automation: the CLI and its skills for Codex and Claude Code. Needs Vite+.
-
-## Skills
-
-```bash
-vpx skills add resend/resend-skills
-vpx skills add resend/email-best-practices
-```
-
-Choose **Global** scope and select the agents to install to.
-
-## Agent Instructions
-
-[`codex/.codex/AGENTS.md`](codex/.codex/AGENTS.md) holds my global instructions for coding agents. Codex reads it directly. Claude Code reads `CLAUDE.md` instead, so [`claude/.claude/CLAUDE.md`](claude/.claude/CLAUDE.md) imports it with `@~/.codex/AGENTS.md`.
-
-Run `/memory` in a Claude Code session to check that it loaded.
 
 ## CLI Setup
 
