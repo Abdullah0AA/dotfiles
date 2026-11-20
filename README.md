@@ -27,6 +27,7 @@ For CachyOS:
 
 ```bash
 sudo pacman -S --needed fish zoxide eza fzf bat ripgrep fd git-delta direnv pgcli stow
+sudo pacman -S --needed go gopls delve
 uv tool install mycli  # not in the official repos; needs uv, see below
 ```
 
